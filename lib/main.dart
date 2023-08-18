@@ -63,6 +63,7 @@ class _MyHomePageState extends State<MyHomePage> {
   final _directoryAppKeyController = TextEditingController();
   final _appKeyAliasController = TextEditingController();
   final _appKeyPasswordController = TextEditingController();
+  final _directoryDestinationController = TextEditingController();
   List<Map<String, String>> _apkInfoToSigned = []; //需要加固的apk路径
   String _currentApkStatus = '请填完整相关进行后再进行一键签名';
 
@@ -194,9 +195,10 @@ class _MyHomePageState extends State<MyHomePage> {
                     _directoryJiaGuController.text = value;
                   });
                   _refreshCursor(_directoryJiaGuController);
-                },onDragDone: (files){
-                  for(var file in files){
-                    if(file.name.endsWith('.apk')){
+                },
+                onDragDone: (files) {
+                  for (var file in files) {
+                    if (file.name.endsWith('.apk')) {
                       if (file.path != null) {
                         Map<String, String> map = {};
                         map['path'] = file.path;
@@ -213,7 +215,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       });
                     }
                   }
-            }),
+                }),
             SizedBox(
               height: 10,
             ),
@@ -283,6 +285,7 @@ class _MyHomePageState extends State<MyHomePage> {
               children: [
                 Expanded(
                     child: TextField(
+                      obscureText: true,
                   controller: _appKeyAliasController,
                   decoration: InputDecoration(
                     contentPadding:
@@ -310,6 +313,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 Expanded(
                     child: TextField(
                   controller: _appKeyPasswordController,
+                  obscureText: true,
                   decoration: InputDecoration(
                     contentPadding:
                         EdgeInsets.symmetric(horizontal: 10, vertical: 0.0),
@@ -371,6 +375,32 @@ class _MyHomePageState extends State<MyHomePage> {
                   // });
                 },
                 child: Text('一键签名')),
+            SizedBox(
+              height: 30,
+            ),
+            buildRow(
+                controller: _directoryDestinationController,
+                hindText: '请输入你要前往的目录',
+                buttonText: '前往',
+                onButtonClick: () async {
+                  String path = _directoryDestinationController.text.trim();
+                  if (await Directory(path).exists()) {
+                    await Process.run('open', [path]);
+                  } else {
+                    print('Directory does not exist: $path');
+                  }
+                },
+                onChanged: (value) {
+                  setState(() {
+                    _directoryDestinationController.text = value;
+                  });
+                  _refreshCursor(_directoryDestinationController);
+                },
+                onDragDone: (files) {
+                    setState(() {
+                      _directoryDestinationController.text = files.first.path;
+                    });
+                }),
           ],
         ),
       ),
