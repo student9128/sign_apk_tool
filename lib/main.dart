@@ -257,6 +257,8 @@ class _MyHomePageState extends State<MyHomePage> {
                     setState(() {
                       _directoryAppKeyController.text = temp;
                     });
+                  }else{
+debugPrint('为空');
                   }
                   // String? dir = await pickerDirectory();
                   // String temp = processPickedPathOrDir(dir);
@@ -272,7 +274,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 },
                 onDragDone: (files) {
                   if (files.first.name.endsWith('.jks') ||
-                      files.first.name.endsWith('.store')) {
+                      files.first.name.endsWith('.keystore')) {
                     setState(() {
                       _directoryAppKeyController.text = files.first.path;
                     });
@@ -285,7 +287,7 @@ class _MyHomePageState extends State<MyHomePage> {
               children: [
                 Expanded(
                     child: TextField(
-                      obscureText: true,
+                  obscureText: true,
                   controller: _appKeyAliasController,
                   decoration: InputDecoration(
                     contentPadding:
@@ -397,9 +399,9 @@ class _MyHomePageState extends State<MyHomePage> {
                   _refreshCursor(_directoryDestinationController);
                 },
                 onDragDone: (files) {
-                    setState(() {
-                      _directoryDestinationController.text = files.first.path;
-                    });
+                  setState(() {
+                    _directoryDestinationController.text = files.first.path;
+                  });
                 }),
           ],
         ),
@@ -424,6 +426,15 @@ class _MyHomePageState extends State<MyHomePage> {
     //对齐的apk路径，并对生成的apk重命名
     String zipAlignOutputApkPath =
         '${_directorySignedApkOutputController.text.trim()}/temp/${zipAlignOutPakName}_zipAlign.apk';
+    var fileSignedApk = File(signedApkOutputPath);
+    if (await fileSignedApk.exists()) {
+      await fileSignedApk.delete();
+    }
+    var fileZipAlignApk = File(zipAlignOutputApkPath);
+    if (await fileZipAlignApk.exists()) {
+      await fileZipAlignApk.delete();
+    }
+
     final argsZipAlign = ['-v', '-p', '4', inputApkPath, zipAlignOutputApkPath];
     final process = await Process.start(commandZipAlign, argsZipAlign);
     // String inputApkPath =
